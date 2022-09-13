@@ -5,6 +5,7 @@ import re
 CSV_FILE = "lib/enterpriseArcher.csv"
 VIDEO_DIR = "/mnt/tele5/enterpriseArcherOK"
 SIMULATE = True
+BORDER = 0.5
 
 filelist = []
 content = []
@@ -34,6 +35,7 @@ def main():
     generateHitModel([os.path.splitext(file)[0] for file in filelist])
     generateMapping()
     printMapping()
+    addEppisodeToFileNames()
 
 
 def splitTitle(title: str):
@@ -84,8 +86,19 @@ def generateMapping():
                 mapping[titleRef][1] = fileId
 
 def printMapping():
-    for titleRef in mapping:
+    for titleRef in [i for i in mapping if mapping[i][0]>=BORDER]:
+        print(f"[{int(mapping[titleRef][0] * 100)} %] {content[titleRef]}\t=> {filelist[mapping[titleRef][1]]}")
+    print()
+    print ("="*10)
+    print ("Problems")
+    print("="*10)
+    print()
+    for titleRef in [i for i in mapping if mapping[i][0]<BORDER]:
         print(f"[{int(mapping[titleRef][0] * 100)} %] {content[titleRef]}\t=> {filelist[mapping[titleRef][1]]}")
 
+def addEppisodeToFileNames():
+    for titleRef in [i for i in mapping if mapping[i][0]>=BORDER]:
+        filename = f"S{content[titleRef][0]}E{content[titleRef][1]}_{content[titleRef][2]}.mp4"
+        print(f"{filelist[mapping[titleRef][1]]} => {filename}")
 if __name__ == '__main__':
     main()
